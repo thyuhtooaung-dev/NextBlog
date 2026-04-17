@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 
 export default function SignupPage() {
   const form = useForm<z.infer<typeof signUpSchema>>({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(signUpSchema as any),
     defaultValues: {
       name: "",
