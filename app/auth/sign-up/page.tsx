@@ -19,6 +19,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
+import { authClient } from "@/lib/auth-client";
 
 export default function SignupPage() {
   const form = useForm<z.infer<typeof signUpSchema>>({
@@ -31,8 +32,12 @@ export default function SignupPage() {
     },
   });
 
-  const onSubmit = () => {
-    console.log("yoo");
+  const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
+    await authClient.signUp.email({
+      email: data.email,
+      name: data.name,
+      password: data.password,
+    });
   };
 
   return (
