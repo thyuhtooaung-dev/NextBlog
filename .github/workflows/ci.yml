@@ -1,8 +1,6 @@
 name: Nextblog CI
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 
@@ -47,3 +45,4 @@ jobs:
           NEXT_PUBLIC_CONVEX_URL: "https://insightful-pheasant-237.convex.cloud"
           NEXT_PUBLIC_CONVEX_SITE_URL: "https://insightful-pheasant-237.convex.site"
           NEXT_PUBLIC_SITE_URL: "http://localhost:3000"
+          BETTER_AUTH_SECRET: "dummy-secret-for-ci-build"
