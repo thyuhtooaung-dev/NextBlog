@@ -1,4 +1,4 @@
-import z from "zod";
+import { z } from "zod/v3";
 
 export const signUpSchema = z.object({
   name: z
@@ -7,4 +7,9 @@ export const signUpSchema = z.object({
     .max(30, "Name must be at most 30 characters long"),
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters long"),
+});
+
+export const loginSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(1, "Password is required"),
 });

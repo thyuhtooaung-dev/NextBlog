@@ -1,7 +1,7 @@
 "use client";
 
 import { signUpSchema } from "@/app/schemas/auth";
-import { z } from "zod";
+import { z } from "zod/v3";
 import {
   Card,
   CardContent,
@@ -20,11 +20,16 @@ import {
 } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
+import { useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
 export default function SignupPage() {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const form = useForm<z.infer<typeof signUpSchema>>({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(signUpSchema as any),
+    resolver: zodResolver(signUpSchema),
     defaultValues: {
       name: "",
       email: "",
@@ -32,11 +37,24 @@ export default function SignupPage() {
     },
   });
 
-  const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
-    await authClient.signUp.email({
-      email: data.email,
-      name: data.name,
-      password: data.password,
+  const onSubmit = (data: z.infer<typeof signUpSchema>) => {
+    startTransition(async () => {
+      try {
+        const result = await authClient.signUp.email({
+          email: data.email,
+          name: data.name,
+          password: data.password,
+        });
+
+        if (result.error) {
+          toast.error(result.error.message || "Failed to sign up");
+        } else {
+          toast.success("Account created successfully!");
+          router.push("/auth/login");
+        }
+      } catch {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
     });
   };
 
@@ -103,7 +121,16 @@ export default function SignupPage() {
               )}
             />
 
-            <Button type="submit">Sign up</Button>
+            <Button type="submit" disabled={isPending}>
+              {isPending ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" />{" "}
+                  <span>Loading...</span>
+                </>
+              ) : (
+                <span>Sign up</span>
+              )}
+            </Button>
           </FieldGroup>
         </form>
       </CardContent>
