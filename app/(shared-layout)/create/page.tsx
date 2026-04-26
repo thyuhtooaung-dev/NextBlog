@@ -26,7 +26,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { z } from "zod/v3";
 
+import { useRouter } from "next/navigation";
+
 export default function CreatePage() {
+  const router = useRouter();
+  const createPost = useMutation(api.posts.createPost);
+  const [isPending, startTransition] = useTransition();
+
   const form = useForm<z.infer<typeof postSchema>>({
     resolver: zodResolver(postSchema),
     defaultValues: {
@@ -34,15 +40,13 @@ export default function CreatePage() {
       content: "",
     },
   });
-  const createPost = useMutation(api.posts.createPost);
-  const [isPending, startTransition] = useTransition();
 
   const onSubmit = (data: z.infer<typeof postSchema>) => {
     startTransition(async () => {
       try {
         await createPost(data);
         toast.success("Post created successfully!");
-        form.reset();
+        router.push("/");
       } catch {
         toast.error("Failed to create post");
       }
