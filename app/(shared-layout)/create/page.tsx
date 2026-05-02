@@ -3,7 +3,6 @@
 import { useTransition } from "react";
 import { Loader2 } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
-import { useMutation } from "convex/react";
 import {
   Card,
   CardDescription,
@@ -21,16 +20,15 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { postSchema } from "@/app/schemas/blog";
-import { api } from "@/convex/_generated/api";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { z } from "zod/v3";
 
 import { useRouter } from "next/navigation";
+import { createBlogAction } from "@/app/actions";
 
 export default function CreatePage() {
   const router = useRouter();
-  const createPost = useMutation(api.posts.createPost);
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<z.infer<typeof postSchema>>({
@@ -44,7 +42,7 @@ export default function CreatePage() {
   const onSubmit = (data: z.infer<typeof postSchema>) => {
     startTransition(async () => {
       try {
-        await createPost(data);
+        await createBlogAction(data);
         toast.success("Post created successfully!");
         router.push("/");
       } catch {
